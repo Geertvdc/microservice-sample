@@ -60,5 +60,24 @@ namespace shoppingcartapi.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{customerId}/items")]
+        public IActionResult Delete(string customerId, [FromBody]DeleteItemFromCart cartItem)
+        {
+            if (cartItem == null)
+            {
+                return BadRequest("invalid message");
+            }
+            if (string.IsNullOrEmpty(customerId) || cartItem.UserId != customerId)
+            {
+                return BadRequest("invalid customerId");
+            }
+
+            var cart = _cartsystem.ActorSelection($"/user/cartcoordinator/cart-{customerId}");
+
+            cart.Tell(cartItem);
+
+            return Ok();
+        }
     }
 }
